@@ -21,6 +21,8 @@ class Robot:
         self.clearance = clearance
         self.start = start
         self.goal = goal
+        self.Range_X = 100
+        seld.Range_Y = 200
         
 start = False        
 goal = False
@@ -131,6 +133,57 @@ workspace = plot_workspace(x_start,y_start,x_goal,y_goal)
 cv2.imshow("img",workspace)
 cv2.waitKey(0)
 
+# define a class before this
+    # move is valid 
+    def Move_is_Allowed(self, Current_X, Current_y):
+        return (Current_x >= (1 + self.radius + self.clearance) and Current_x <= (self.Range_X - self.radius - self.clearance) and Current_y >= (1 + self.radius + self.clearance) and Current_y <= (self.Range_Y - self.radius - self.clearance))
 
+    #  action left
+    def Action_Left(self, Current_x, Current_y):
+        if(self.Move_is_Allowed(Current_x, Current_y - 1) and self.Obstacle_Check(Current_x, Current_y - 1) == False):
+            return True
+        return False
+
+    # action right
+    def Action_Right(self, Current_x, Current_y):
+        if(self.Move_is_Allowed(Current_x, Current_y + 1) and self.Obstacle_Check(Current_x, Current_y + 1) == False):
+            return True
+        return False
+
+    # action up
+    def Action_Up(self, Current_x, Current_y):
+        if(self.Move_is_Allowed(Current_x - 1, Current_y) and self.Obstacle_Check(Current_x - 1, Current_y) == False):
+            return True
+        return False
+
+    # action down
+    def Action_Down(self, Current_x, Current_y):
+        if(self.Move_is_Allowed(Current_x + 1, Current_y) and self.Obstacle_Check(Current_x + 1, Current_y) == False):
+            return True
+        return False
+
+    # action right up
+    def Action_Up_Right(self, Current_x, Current_y):
+        if(self.Move_is_Allowed(Current_x - 1, Current_y + 1) and self.Obstacle_Check(Current_x - 1, Current_y + 1) == False):
+            return True
+        return False
+
+    # action right down
+    def Action_Down_Right(self, Current_x, Current_y):
+        if(self.Move_is_Allowed(Current_x + 1, Current_y + 1) and self.Obstacle_Check(Current_x + 1, Current_y + 1) == False):
+            return True
+        return False
+
+    # action left down
+    def Action_Down_Left(self, Current_x, Current_y):
+        if(self.Move_is_Allowed(Current_x + 1, Current_y - 1) and self.Obstacle_Check(Current_x + 1, Current_y - 1) == False):
+            return True
+        return False
+
+    # action left up
+    def Action_Up_Left(self, Current_x, Current_y):
+        if(self.Move_is_Allowed(Current_x - 1, Current_y - 1) and self.Obstacle_Check(Current_x - 1, Current_y - 1) == False):
+            return True
+        return False
 
 
