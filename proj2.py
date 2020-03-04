@@ -186,4 +186,17 @@ cv2.waitKey(0)
             return True
         return False
 
-
+    # if there is an obstacle for trailMap
+    def Obstacle_Check(self, x, y):
+        Addition = self.clearance + self.radius
+        square = 1.4142 * Addition
+        
+        # check circle
+        Distance_Circle = ((x - 160) * (x - 160) + (y - 50) * (y - 50)) - ((15 + Addition)*(15 + Addition))
+        
+        # check square line equations
+        # x>=90 and x<= 110 and y>=40 and y<=60  
+        
+        if(Distance_Circle <= 0 or (x>=(90 + square)) and (x<= (110 + square)) and (y>= (40+ square)) and y<=(60 + square)):
+            return True
+        return False
