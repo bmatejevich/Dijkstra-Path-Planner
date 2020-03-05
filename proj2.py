@@ -227,3 +227,67 @@ cv2.waitKey(0)
     cv2.fillConvexPoly(img, cords_triangle1, [0,0,0])
     cords_triangle2 = np.array([[ 20, 80],[25, 15 ],[ 50, 50 ]], dtype=np.int32)
     cv2.fillConvexPoly(img, cords_triangle2, [0,0,0])
+    
+    
+    # half plane equations cartesian coordinate
+    def check_rhombus(x,y):
+    flag1 = False
+    flag2 = False
+    if 5y + 3x > 1625-radius-clearance and 5y + 3x < 1475+radius+clearance:
+        flag1 = True
+    if 5y - 3x > 275-radius-clearance and 5y - 3x < 125+radius+clearance:
+        flag2 = True
+    if flag1 and flag2:
+        return False
+        print("You are in the rhombus!")
+    else:
+        return True
+    
+def check_circle(x,y):
+    center = [225, 50]
+    dist = np.sqrt((x - center[0]) ** 2 + (y - center[1]) ** 2)
+    
+    if dist <= 25+radius+clearance:
+        return False
+        print("You are in the circle!")
+    else:
+        return True
+    
+def check_polygon(x,y):
+    flag1 = False
+    flag2 = False
+    flag3 = False
+    if y + 13x > 340-radius-clearance and 5y - 7x < -450+radius+clearance:
+        flag1 = True
+    if 5y - 6x > -50-radius-clearance and 5y+6x < 850+radius+clearance:
+        flag2 = True
+    if y + x > 100-radius-clearance and y < 15+radius+clearance:
+        flag3 = True
+    if flag1 and flag2 and flag3:
+        return False
+        print("You are in the polygon!")
+    else:
+        return True
+
+def check_ellipse(x,y):
+    center = [150, 100]
+    dist = np.sqrt((x - center[0])/20 ** 2 + (y - center[1]) ** 2)/20
+    
+    if dist <= (20+radius+clearance)**2 +(40+radius+clearance)**2:
+        return False
+        print("You are in the ellipse!")
+    else:
+        return True
+
+def check_rod(x,y):
+    flag1 = False
+    flag2 = False
+    if y-0.115x > 159-radius-clearance and y-0.115x < 153+radius+clearance:
+        flag1 = True
+    if y+0.577x > 180-radius-clearance and y+0.577x < 225+radius+clearance:
+        flag2 = True
+    if flag1 and flag2:
+        return False
+        print("You are in the rod!")
+    else:
+        return True
