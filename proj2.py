@@ -200,3 +200,30 @@ cv2.waitKey(0)
         if(Distance_Circle <= 0 or (x>=(90 + square)) and (x<= (110 + square)) and (y>= (40+ square)) and y<=(60 + square)):
             return True
         return False
+
+    # Creating final map workspace
+    def plot_final_workspace(x_start,y_start,x_goal,y_goal):
+    img = 255 * np.ones((200, 300, 3), np.uint8)
+    
+    #tried in cartesian coordinates
+    # Plot the rhombus
+    cords_rhombus = np.array([[ 225, 190],[ 250, 175 ], [ 225, 160 ],[ 200 , 175 ]], dtype=np.int32)
+    cv2.fillConvexPoly(img, cords_rhombus, [0,0,0])
+    
+    # Plot the circle
+    cv2.circle(img, (225, 50), 25, (0, 0, 0), -1)
+    
+    #Plot the ellipse
+    cv2.ellipse(img, (150, 100), (40, 20), 0, 0, 360, (0, 0, 0), -1)
+    
+    #Plot the rod
+    cords_rod = np.array([[ 30.05, 162.50],[ 95, 170 ], [ 103.66, 165 ],[ 38.71 , 157.50 ]], dtype=np.int32)
+    cv2.fillConvexPoly(img, cords_rod, [0,0,0])
+    
+    #Plot the polygon (Triangles and parallelogram)
+    cords_parallelogram = np.array([[ 75, 80],[100, 50 ], [ 75, 15 ],[ 50, 50 ]], dtype=np.int32)
+    cv2.fillConvexPoly(img, cords_parallelogram, [0,0,0])
+    cords_triangle1 = np.array([[ 25, 15], [ 75, 15 ],[ 50, 50 ]], dtype=np.int32)
+    cv2.fillConvexPoly(img, cords_triangle1, [0,0,0])
+    cords_triangle2 = np.array([[ 20, 80],[25, 15 ],[ 50, 50 ]], dtype=np.int32)
+    cv2.fillConvexPoly(img, cords_triangle2, [0,0,0])
