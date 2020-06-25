@@ -21,7 +21,7 @@ class Robot:
         self.clearance = clearance
         self.start = start
         self.goal = goal
-        
+
 def get_min_node(queue):
     min_node = 0
     for node in range(len(queue)):
@@ -35,7 +35,7 @@ def node_exists(x,y, queue):
             return queue.index(node)
         else:
             return None
-        
+
 def try_move(move, current_point, radius, clearance):
     if move == 'move_up':
         return move_up(current_point, radius, clearance)
@@ -94,7 +94,7 @@ def check_viableX(point):
         print("Invalid")
         print()
         return False
-    
+
 def check_viableY(point):
     if point > 0 and point < 200:
         return True
@@ -113,43 +113,43 @@ def check_oval(x,y):
         return False
     else:
         return True
-    
-    
+
+
 def check_circle(x,y):
     y = 200 - y
     center = [225, 150]
     dist = np.sqrt((x - center[0]) ** 2 + (y - center[1]) ** 2)
-    
+
     if dist <= 25+radius+clearance:
         print("Don't go in the circle!")
         return False
     else:
         return True
-    
+
 def check_rectangle(x,y):
     y = 200-y
     one = [95,200-170]
     two = [30.5,200-132.5]
     three = [35.5,200-123.9]
     four = [100,200-161.4]
-    
+
     m_bottom = (two[1]-one[1])/(two[0]-one[0])
     m_top = (three[1]-four[1])/(three[0]-four[0])
     m_right = (one[1]-four[1])/(one[0]-four[0])
     m_left = (two[1]-three[1])/(two[0]-three[0])
-    
+
     #solve for y intercept  y=mx+b or b = y-mx
     b_bottom = one[1]-m_bottom*one[0]
     b_top = three[1]-m_top*three[0]
     b_left = two[1]-m_left*two[0]
     b_right = four[1]-m_right*four[0]
-    
+
     # 0 = y -mx -b
-    eq_top = y - m_top*x-(b_top+radius+clearance+1) #+1 for rounding error
+    eq_top = y - m_top*x-(b_top+radius+clearance+1)
     eq_bottom = y - m_bottom*x -(b_bottom-radius-clearance)
     eq_left = y -m_left*x-(b_left+radius+clearance+2) # +2 is from rounding
     eq_right = y - m_right*x -(b_right-radius-clearance)
-    
+
     if eq_top <= 0 and eq_bottom >= 0 and eq_left <= 0 and eq_right >= 0:
         print("Don't go in the rectangle!")
         return False
@@ -162,30 +162,30 @@ def check_diamond(x,y):
     two = [200,200-175]
     three = [225,200-160]
     four = [250,200-175]
-    
+
     m_bottom = (two[1]-one[1])/(two[0]-one[0])
     m_top = (three[1]-four[1])/(three[0]-four[0])
     m_right = (one[1]-four[1])/(one[0]-four[0])
     m_left = (two[1]-three[1])/(two[0]-three[0])
-    
+
     #solve for y intercept  y=mx+b or b = y-mx
     b_bottom = one[1]-m_bottom*one[0]
     b_top = three[1]-m_top*three[0]
     b_left = two[1]-m_left*two[0]
     b_right = four[1]-m_right*four[0]
-    
+
     # 0 = y -mx -b
     eq_top = y - m_top*x-(b_top+radius+clearance)
     eq_bottom = y - m_bottom*x -(b_bottom-radius-clearance)
     eq_left = y -m_left*x-(b_left+radius+clearance)
     eq_right = y - m_right*x -(b_right-radius-clearance)
-    
+
     if eq_top <= 0 and eq_bottom >= 0 and eq_left <= 0 and eq_right >= 0:
         print("Don't go in the diamond!")
         return False
     else:
         return True
-    
+
 
 def check_polygon(x,y):
     y = 200 - y
@@ -194,9 +194,9 @@ def check_polygon(x,y):
     three = [75,200-15]
     four = [100,200-50]
     five = [75,200-80]
-    six = [50,200-50] 
-    
-    
+    six = [50,200-50]
+
+
     m_one = (one[1]-two[1])/(one[0]-two[0])
     m_two = (two[1]-three[1])/(two[0]-three[0])
     m_three = (three[1]-four[1])/(three[0]-four[0])
@@ -204,7 +204,7 @@ def check_polygon(x,y):
     m_five = (six[1]-five[1])/(six[0]-five[0])
     m_six = (one[1]-six[1])/(one[0]-six[0])
     m_seven = (six[1]-three[1])/(six[0]-three[0])
-    
+
     #solve for y intercept  y=mx+b or b = y-mx
     b_one = one[1]-m_one*one[0]
     b_two = two[1]-m_two*two[0]
@@ -213,26 +213,26 @@ def check_polygon(x,y):
     b_five = five[1]-m_five*five[0]
     b_six = six[1]-m_six*six[0]
     b_seven = six[1]-m_seven*six[0]
-    
+
     # 0 = y -mx -b
-    
+
     eq_one = y - m_one*(x+clearance+radius)-(b_one)
-    eq_two = (y) - m_two*x -(b_two+clearance+radius) 
+    eq_two = (y) - m_two*x -(b_two+clearance+radius)
     eq_three = y -m_three*(x)-(b_three+clearance+radius)
     eq_four = y - m_four*x -(b_four-clearance-radius)
     eq_five = y - m_five*x - (b_five-clearance-radius)
     eq_six = y - (m_six*x) - (b_six-clearance-radius)
     eq_seven = y - m_seven*x-(b_seven) #interior line segment
-    
+
 
     if eq_one <= 0 and eq_two <= 0 and eq_six>=0 and eq_seven >=0:
         print("Don't go in the polygon1!")
         return False
-    
+
     if eq_three <= 0 and eq_four >= 0 and eq_five >= 0 and eq_seven <= 0:
         print("Don't go in the polygon2!")
         return False
-    
+
     else:
         return True
 
@@ -242,20 +242,20 @@ def plot_workspace(x_start,y_start,x_goal,y_goal):
     # Plot the diamond
     cords_square = np.array([[225 , 190 ],[200, 175 ], [225 , 160 ],[250 , 175]], dtype=np.int32)
     cv2.fillConvexPoly(img, cords_square, [0,0,0])
-    
+
     # Plot the circle
     cv2.circle(img, (225, 50), 25, (0, 0, 0), -1)
-    
+
     # Plot the oval
     cv2.ellipse(img, (150, 100), (40, 20), 0, 0, 360, 0, -1)
-    
+
     # Plot the polygon
     poly1 = np.array([[20,80], [25,15],[75,15],[50,50]], dtype=np.int32)
     cv2.fillConvexPoly(img, poly1, [0,0,0])
-    
+
     poly2 = np.array([[50,50], [75,15],[100,50],[75,80]], dtype=np.int32)
     cv2.fillConvexPoly(img, poly2, [0,0,0])
-    
+
     # Plot rectangle
     poly3 = np.array([[95,170], [int(30.5),int(132.5)],[int(35.5),int(123.9)],[100,int(161.4)]], dtype=np.int32)
     cv2.fillConvexPoly(img, poly3, [0,0,0])
@@ -351,30 +351,30 @@ def move_down_left(point, radius, clearance):
 
 
 def djikstra(image, robot):
-    
+
     radius = robot.radius
     clearance = robot.clearance
-    
+
     start_node_pos = robot.start
     goal_node_pos = robot.goal
-    
+
     image[start_node_pos[1], start_node_pos[0]] = [0, 255, 0]
     image[goal_node_pos[1], goal_node_pos[0]] = [0, 0, 255]
-    
+
     start_node = Node(start_node_pos[0],start_node_pos[1])
     start_node.cost = 0
 
     waysIn = ways_in(goal_node_pos[0],goal_node_pos[1])
     print("Ways in", waysIn)
-    
+
     visitedNodes = list()
     queue = [start_node]
-    
+
     moves = ["move_up", "move_down", "move_left", "move_right",
                "move_up_right", "move_down_right", "move_up_left", "move_down_left"]
     counter = 0
     frame = 0
-    
+
     while queue:
         current_node = get_min_node(queue)
         current_point = [current_node.x,current_node.y]
@@ -385,7 +385,7 @@ def djikstra(image, robot):
             frame +=1
             if new_point is not None:
                 if new_point == goal_node_pos:
-                    
+
                     if counter < waysIn:
                         counter += 1
                         print("Goal reached " +str(counter) + " times")
@@ -401,7 +401,7 @@ def djikstra(image, robot):
                 if frame % 75 == 0:
                     cv2.imshow("Map", image)
                     cv2.waitKey(1)
-                
+
                 if str(new_point) not in visitedNodes:
                     new_node.cost = cost + new_node.parent.cost
                     visitedNodes.append(str(new_point))
@@ -420,18 +420,28 @@ def djikstra(image, robot):
     return None, None
 
 #################################################
+rigid_or_point = False
 start = False
 goal = False
 
-#change these values for point/rigid robot
-radius = 0
-clearance = 0
+while rigid_or_point == False:
+    robot_type = input("Enter (r) for rigid or (p) for point robot:  ")
+    if robot_type == "r":
+        radius = 3
+        clearance = 5
+        rigid_or_point = True
+    elif robot_type == "p":
+        radius = 0
+        clearance = 0
+        rigid_or_point = True
+    else:
+        pass
 
 
 while start == False:
     x_start = input("Enter robot x position : ")
     x_start = int(x_start)
-    y_start = input("Enter robot y position : ") 
+    y_start = input("Enter robot y position : ")
     y_start = int(y_start)
     start = check_viableY(y_start)
     if start == True:
@@ -446,11 +456,11 @@ while start == False:
                         start = check_diamond(x_start,y_start)
                         if start == True:
                             start = check_polygon(x_start,200-y_start)
-    
+
 while goal == False:
-    x_goal = input("Enter goal x position : ") 
+    x_goal = input("Enter goal x position : ")
     x_goal = int(x_goal)
-    y_goal = input("Enter goal y position : ") 
+    y_goal = input("Enter goal y position : ")
     y_goal = int(y_goal)
     goal = check_viableY(y_goal)
     if goal == True:
@@ -497,7 +507,3 @@ if solution is not None:
     cv2.destroyAllWindows()
 else:
     print("No path to goal point")
-
-
-
-
