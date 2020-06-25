@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
-'''
-
-'''
+""" """
 import math
 import numpy as np
 import cv2
 import time as t
 
 class Node:
+    """ node class which contain location, cost and parent info"""
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -16,6 +15,7 @@ class Node:
         self.parent = None
 
 class Robot:
+    """ robot class which will move from node to node"""
     def __init__(self, radius, clearance, start, goal):
         self.radius = radius
         self.clearance = clearance
@@ -23,6 +23,7 @@ class Robot:
         self.goal = goal
 
 def get_min_node(queue):
+    """ returns the node with minimum cost from the nodelist """
     min_node = 0
     for node in range(len(queue)):
         if queue[node].cost < queue[min_node].cost:
@@ -30,6 +31,7 @@ def get_min_node(queue):
     return queue.pop(min_node)
 
 def node_exists(x,y, queue):
+    """ checks to see if a node already exists in the queue"""
     for node in queue:
         if node.x == x and node.y == y:
             return queue.index(node)
@@ -37,6 +39,7 @@ def node_exists(x,y, queue):
             return None
 
 def try_move(move, current_point, radius, clearance):
+    """ returns the resulting node from the appropriate move function"""
     if move == 'move_up':
         return move_up(current_point, radius, clearance)
     if move == 'move_down':
@@ -54,7 +57,8 @@ def try_move(move, current_point, radius, clearance):
     if move == 'move_down_left':
         return move_down_left(current_point, radius, clearance)
 
-def ways_in(x,y): # a pixel with no obstacles or edges nearby can be achieved from 8 moves
+def ways_in(x,y):
+    """ counts the number of ways into the goal node """
     count = 0
     if y > 0: #from top
         count+=1
@@ -74,11 +78,13 @@ def ways_in(x,y): # a pixel with no obstacles or edges nearby can be achieved fr
         count+=1
     return count
 
-def fill_pixel(img,x,y): #fill visited pixes
+def fill_pixel(img,x,y):
+    """ returns and updated image with newly visited node colored in"""
     img[y,x] = [255,0,0]
     return img
 
-def backtrack(node): #create list of parent node locations
+def backtrack(node):
+    """ creates a list of parent nodes from goal to start"""
     parentList = list()
     parent = node.parent
     while parent is not None:
@@ -88,6 +94,7 @@ def backtrack(node): #create list of parent node locations
 
 
 def check_viableX(point):
+    """ returns true if the x value is within the map, else false"""
     if point >= 0 and point < 300:
         return True
     else:
@@ -96,6 +103,7 @@ def check_viableX(point):
         return False
 
 def check_viableY(point):
+    """ returns true if the value of y is within the map, else false"""
     if point > 0 and point < 200:
         return True
     else:
@@ -104,6 +112,8 @@ def check_viableY(point):
         return False
 
 def check_oval(x,y):
+    """ check the x,y pair to make sure it is not in or
+    within clearance of the oval"""
     center = [150, 100]
     rx = 40 + radius+clearance
     ry = 20 + radius+clearance
@@ -116,6 +126,8 @@ def check_oval(x,y):
 
 
 def check_circle(x,y):
+    """ check the x,y pair to make sure it is not in or
+    within clearance of the circle"""
     y = 200 - y
     center = [225, 150]
     dist = np.sqrt((x - center[0]) ** 2 + (y - center[1]) ** 2)
@@ -127,6 +139,8 @@ def check_circle(x,y):
         return True
 
 def check_rectangle(x,y):
+    """ check the x,y pair to make sure it is not in or
+    within clearance of the rectangle"""
     y = 200-y
     one = [95,200-170]
     two = [30.5,200-132.5]
@@ -147,7 +161,7 @@ def check_rectangle(x,y):
     # 0 = y -mx -b
     eq_top = y - m_top*x-(b_top+radius+clearance+1)
     eq_bottom = y - m_bottom*x -(b_bottom-radius-clearance)
-    eq_left = y -m_left*x-(b_left+radius+clearance+2) # +2 is from rounding
+    eq_left = y -m_left*x-(b_left+radius+clearance+2)
     eq_right = y - m_right*x -(b_right-radius-clearance)
 
     if eq_top <= 0 and eq_bottom >= 0 and eq_left <= 0 and eq_right >= 0:
@@ -157,6 +171,8 @@ def check_rectangle(x,y):
         return True
 
 def check_diamond(x,y):
+    """ check the x,y pair to make sure it is not in or
+    within clearance of the diamond"""
     y = 200-y
     one = [225,200-190]
     two = [200,200-175]
@@ -188,6 +204,8 @@ def check_diamond(x,y):
 
 
 def check_polygon(x,y):
+    """ check the x,y pair to make sure it is not in or
+    within clearance of the polygon"""
     y = 200 - y
     one = [20,200-80]
     two = [25,200-15]
@@ -215,7 +233,6 @@ def check_polygon(x,y):
     b_seven = six[1]-m_seven*six[0]
 
     # 0 = y -mx -b
-
     eq_one = y - m_one*(x+clearance+radius)-(b_one)
     eq_two = (y) - m_two*x -(b_two+clearance+radius)
     eq_three = y -m_three*(x)-(b_three+clearance+radius)
@@ -237,6 +254,7 @@ def check_polygon(x,y):
         return True
 
 def plot_workspace(x_start,y_start,x_goal,y_goal):
+    """ plots the workspace including all obstacles in a numpy array"""
     img = 255 * np.ones((200, 300, 3), np.uint8)
 
     # Plot the diamond
@@ -263,6 +281,7 @@ def plot_workspace(x_start,y_start,x_goal,y_goal):
     return img
 
 def move_up(point, radius, clearance):
+    """ returns new node if move up is possible"""
     x = point[0]
     y = point[1]
     cost = 1
@@ -274,6 +293,7 @@ def move_up(point, radius, clearance):
 
 
 def move_down(point, radius, clearance):
+    """ returns new node if move down is possible"""
     x = point[0]
     y = point[1]
     cost = 1
@@ -285,6 +305,7 @@ def move_down(point, radius, clearance):
 
 
 def move_left(point, radius, clearance):
+    """ returns new node if move left is possible"""
     x = point[0]
     y = point[1]
     cost = 1
@@ -296,6 +317,7 @@ def move_left(point, radius, clearance):
 
 
 def move_right(point, radius, clearance):
+    """ returns new node if move right is possible"""
     x = point[0]
     y = point[1]
     cost = 1
@@ -307,6 +329,7 @@ def move_right(point, radius, clearance):
 
 
 def move_up_right(point, radius, clearance):
+    """ returns new node if move up-right is possible"""
     x = point[0]
     y = point[1]
     cost = np.sqrt(2)
@@ -318,6 +341,7 @@ def move_up_right(point, radius, clearance):
 
 
 def move_up_left(point, radius, clearance):
+    """ returns new node if move up-left is possible"""
     x = point[0]
     y = point[1]
     cost = np.sqrt(2)
@@ -329,6 +353,7 @@ def move_up_left(point, radius, clearance):
 
 
 def move_down_right(point, radius, clearance):
+    """ returns new node if move down-right is possible"""
     x = point[0]
     y = point[1]
     cost = np.sqrt(2)
@@ -340,6 +365,7 @@ def move_down_right(point, radius, clearance):
 
 
 def move_down_left(point, radius, clearance):
+    """ returns new node if move down-left is possible"""
     x = point[0]
     y = point[1]
     cost = np.sqrt(2)
@@ -350,8 +376,9 @@ def move_down_left(point, radius, clearance):
         return None, None
 
 
-def djikstra(image, robot):
-
+def dijkstra(image, robot):
+    """ takes in the map and the initial state of the robot and if possible
+    finds the fastest path to the robot's goal via dijkstra's algorithm"""
     radius = robot.radius
     clearance = robot.clearance
 
@@ -419,91 +446,97 @@ def djikstra(image, robot):
             return new_node.parent, image
     return None, None
 
-#################################################
-rigid_or_point = False
-start = False
-goal = False
+def main():
+    rigid_or_point = False
+    start = False
+    goal = False
 
-while rigid_or_point == False:
-    robot_type = input("Enter (r) for rigid or (p) for point robot:  ")
-    if robot_type == "r":
-        radius = 3
-        clearance = 5
-        rigid_or_point = True
-    elif robot_type == "p":
-        radius = 0
-        clearance = 0
-        rigid_or_point = True
-    else:
-        pass
+    while rigid_or_point == False:
+        robot_type = input("Enter (r) for rigid or (p) for point robot:  ")
+        if robot_type == "r":
+            radius = 3
+            clearance = 5
+            rigid_or_point = True
+        elif robot_type == "p":
+            radius = 0
+            clearance = 0
+            rigid_or_point = True
+        else:
+            rigid_or_point = False
 
 
-while start == False:
-    x_start = input("Enter robot x position : ")
-    x_start = int(x_start)
-    y_start = input("Enter robot y position : ")
-    y_start = int(y_start)
-    start = check_viableY(y_start)
-    if start == True:
-        start = check_viableX(x_start)
-        if start ==True:
-            start = check_oval(x_start,y_start)
-            if start == True:
-                start = check_circle(x_start,y_start)
+    while start == False:
+        x_start = input("Enter robot x position : ")
+        x_start = int(x_start)
+        y_start = input("Enter robot y position : ")
+        y_start = int(y_start)
+        start = check_viableY(y_start)
+        if start == True:
+            start = check_viableX(x_start)
+            if start ==True:
+                start = check_oval(x_start,y_start)
                 if start == True:
-                    start = check_rectangle(x_start,y_start)
+                    start = check_circle(x_start,y_start)
                     if start == True:
-                        start = check_diamond(x_start,y_start)
+                        start = check_rectangle(x_start,y_start)
                         if start == True:
-                            start = check_polygon(x_start,200-y_start)
+                            start = check_diamond(x_start,y_start)
+                            if start == True:
+                                start = check_polygon(x_start,200-y_start)
 
-while goal == False:
-    x_goal = input("Enter goal x position : ")
-    x_goal = int(x_goal)
-    y_goal = input("Enter goal y position : ")
-    y_goal = int(y_goal)
-    goal = check_viableY(y_goal)
-    if goal == True:
-        goal = check_viableX(x_goal)
-        if goal ==True:
-            goal = check_oval(x_goal,y_goal)
-            if goal == True:
-                goal = check_circle(x_goal,y_goal)
+    while goal == False:
+        x_goal = input("Enter goal x position : ")
+        x_goal = int(x_goal)
+        y_goal = input("Enter goal y position : ")
+        y_goal = int(y_goal)
+        goal = check_viableY(y_goal)
+        if goal == True:
+            goal = check_viableX(x_goal)
+            if goal ==True:
+                goal = check_oval(x_goal,y_goal)
                 if goal == True:
-                    goal = check_rectangle(x_goal,y_goal)
+                    goal = check_circle(x_goal,y_goal)
                     if goal == True:
-                        goal = check_diamond(x_goal,y_goal)
+                        goal = check_rectangle(x_goal,y_goal)
                         if goal == True:
-                            goal = check_polygon(x_goal,200-y_goal)
+                            goal = check_diamond(x_goal,y_goal)
+                            if goal == True:
+                                goal = check_polygon(x_goal,200-y_goal)
 
 
 
 
-start = t.time()
-y_start = 200 - y_start
-y_goal = 200 - y_goal
+    start = t.time()
+    y_start = 200 - y_start
+    y_goal = 200 - y_goal
 
-start_node = [x_start,y_start]
-goal_node = [x_goal,y_goal]
-
-
-
-robot1 = Robot(radius, clearance, start_node, goal_node)
-
-workspace = plot_workspace(x_start,y_start,x_goal,y_goal)
+    start_node = [x_start,y_start]
+    goal_node = [x_goal,y_goal]
 
 
-solution, image = djikstra(workspace, robot1)
-print("Time to solve: " + str(t.time()-start) + " seconds")
-if solution is not None:
-    parent_list = backtrack(solution)
-    for parent in parent_list:
-        x = parent.x
-        y = parent.y
-        image[y, x] = [0, 255, 0]
-        cv2.imshow("Map", image)
-        cv2.waitKey(25)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-else:
-    print("No path to goal point")
+
+    robot1 = Robot(radius, clearance, start_node, goal_node)
+
+    workspace = plot_workspace(x_start,y_start,x_goal,y_goal)
+
+
+    solution, image = dijkstra(workspace, robot1)
+    seconds = t.time()-start
+    print("Time to solve: {:.1f} seconds".format(seconds))
+    if solution is not None:
+        parent_list = backtrack(solution)
+        for parent in parent_list:
+            x = parent.x
+            y = parent.y
+            image[y, x] = [0, 255, 0]
+            cv2.imshow("Map", image)
+            cv2.waitKey(5)
+        cv2.waitKey(2000)
+        cv2.destroyAllWindows()
+    else:
+        print("No path to goal point")
+    return None
+
+radius = 0
+clearance = 0
+main()
